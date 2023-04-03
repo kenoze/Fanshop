@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <script>
+        
+        }
+        deleteProizvodk = (proizvod) => {
+            fetch("api/proizvod/Delete" + proizvod).then(response => {
+                if (response.ok) {
+                    response.json().then(podaci => {
+                        alert("Delete successful!");
+                    })
+                } else {
+                    alert("Delete failed with code " + response.status)
+                }
+            }).catch(err => {
+                console.log("FetchErr", err)
+            })
+        };
+    </script>
+</body>
+</html>

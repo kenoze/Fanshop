@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Amatic+SC">
+    <title></title>
+    <script>
+        var sviProizvodi;
+        popuniPodatke = (podaci) => {
+            for (let i = 0; i < podaci.length; i++) {
+                //dodavanje reda u tabelu
+                let red = document.createElement("tr");
+                document.getElementById("podaciTabela").appendChild(red);
+
+                //dodavanje celije sa ID
+                let IDproizvoda = document.createElement("td");
+                red.appendChild(IDproizvoda);
+                IDproizvoda.innerHTML = podaci[i].productId;
+                //dodavanje celije sa nazivom
+                let naziv = document.createElement("td");
+                red.appendChild(naziv);
+                naziv.innerHTML = podaci[i].productName;
+                //dodavanje celije sa cijenom
+                /*	let cijenaPoKvadratu=document.createElement("td");
+                    red.appendChild(cijenaPoKvadratu);
+                    cijenaPoKvadratu.innerHTML=podaci[i].cijenaPoKvadratu;
+                    //dodavanje celije sa slikom
+                    let slikaUrl=document.createElement("img");
+                    slikaUrl.setAttribute("src",podaci[i].slikaUrl);
+                    slikaUrl.setAttribute("width","200");
+                    slikaUrl.setAttribute("height","150");
+                    red.appendChild(slikaUrl);
+                    //dodavanje celije sa brojem like-ova
+                    let likeCounter=document.createElement("td");
+                    red.appendChild(likeCounter);
+                    likeCounter.setAttribute("ID","like"+podaci[i].proizvodID);
+                    likeCounter.innerHTML=podaci[i].likeCounter;*/
+                //dodavanje celije sa dugmetom za lajkanje
+                let celijaZaDeatlje = document.createElement("td");
+                red.appendChild(celijaZaDeatlje);
+                let detaljiButton = document.createElement("button");
+                detaljiButton.setAttribute("onclick", "selektuj(" + podaci[i].productId + ")");
+                detaljiButton.innerHTML = "Detalji";
+                celijaZaDeatlje.appendChild(detaljiButton);
+            }
+
+        }
+
+        podaci = () => {
+            fetch('api/proizvod/prikazi_sve_proizvode')
+                .then(
+                    (response) => {
+                        if (response.status !== 200) {
+                            console.log('Geska: ' +
+                                response.status);
+                            return;
+                        }
+                        response.json().then((podat) => {
+                            console.log(podat);
+                            sviProizvodi = podat;
+                            popuniPodatke(podat);
+                        });
+                    }
+                )
+                .catch((err) => {
+                    console.log('Fetch Greska :-S', err);
+                });
+        }
+
+        selektuj = (IDproizvodaZaSelekt) => {
+            for (let i = 0; i < sviProizvodi.length; i++) {
+                if (sviProizvodi[i].productId == IDproizvodaZaSelekt) {
+                    document.getElementById("slika").setAttribute("src", sviProizvodi[i].slikaUrl);
+                    document.getElementById("Cijena").innerHTML = "Cijena:" + sviProizvodi[i].listPrice + " BAM";
+                }
+                search = () => {
+                    let params = document.getElementById("searchBox").value
+                    fetch("api/proizvod/prikazi_filter_proizvoda/" + params).then(response => {
+                        if (response.ok) {
+                            response.json().then(podaci => {
+                                console.log(podaci)
+                            })
+                        }
+                    })
+                }
+
+            }
+        }
+    </script>
+    <style>
+        body, html {
+            height: 100%
+        }
+
+        body, h1, h2, h3, h4, h5, h6 {
+            font-family: "Amatic SC", sans-serif
+        }
+
+        .menu {
+            display: none
+        }
+
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .sve {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        .lijevi {
+            display: inline-block;
+            position: relative;
+            float: left;
+            width: 40%;
+            height: 100%;
+            background-color: white;
+            padding: 2%;
+        }
+
+        .desni {
+            display: inline-block;
+            position: relative;
+            width: 60%;
+            height: 100%;
+            background-color: white;
+            padding: 2%;
+        }
+
+        .zaSliku {
+            height: 60%;
+            width: 100%;
+        }
+
+        .btn1 {
+            width: 20%;
+            height: 40px;
+            background-color: yellow;
+            color: black;
+            font-weight:bold;
+            font-size:medium;
+           
+        }
+
+
+
+        th {
+            background-color: #0026ff;
+            color: white;
+           
+        }
+
+        td {
+            text-align: center;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="sve" id="shop">
+        <div class="lijevi">
+            <div class="batn">
+                <button onclick="podaci()" class="btn1">Ucitaj proizvode</button>
+            </div>
+            <hr>
+            <input type="text" , id="searchBox" , placeholder="Pretrazi proizvode po nazivu" />
+            <button id="searchBtn" onclick="search()">Search</button>
+            <br>
+            <br>
+            <table style="width:100%;table-layout:fixed" id="podaciTabela" border="1px">
+
+                <tr>
+                    <th>ID Proizvoda</th>
+                    <th>Naziv</th>
+                    <th>Detalji</th>
+                </tr>
+
+            </table>
+        </div>
+        <div class="desni">
+            <div class="zaSliku">
+
+                <h1>FAN SHOP</h1>
+                <img ID="slika" src="https://upload.wikimedia.org/wikipedia/bs/a/a4/Logo_Nogometnog_Saveza_BiH_2013.png" alt="Nema slike" width="60%" height="80%">
+
+            </div>
+            <h3 ID="Cijena"></h3>
+
+
+
+
+        </div>
+        <input type="text" , id="searchBox" , placeholder="Pretrazi proizvode po nazivu" />
+        <button id="searchBtn" onclick="search()">Search</button>
+</body>
+</html>
